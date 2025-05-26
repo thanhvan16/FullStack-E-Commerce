@@ -122,6 +122,10 @@ const SummaryApi={
     clearCart:{
         url: `${backendDomin}/api/clearCart`,
         method: "delete"
+    },
+    cancelOrder:{
+        url: `${backendDomin}/api/cancelOrder`,
+        method: "delete"
     }
 }
 export default SummaryApi;

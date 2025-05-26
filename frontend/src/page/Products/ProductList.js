@@ -34,31 +34,43 @@ function ProductList() {
 
   // filter
   const handleFilter = (category) => {
-    navigate(`/products?category=${category}`);
+    const url = new URL(window.location.href);
+    url.searchParams.set('category', category);
+    if (!url.searchParams.has('page')) {
+      url.searchParams.set('page', '1');
+    }
+    navigate(url.pathname + url.search);
   };
   const fetchFilterProduct = async () => {
     const response = await fetch(
-      SummaryApi.filterProduct.url + "?category=" + categoryParam
+      `${SummaryApi.filterProduct.url}?category=${categoryParam}&page=${page}&limit=9`
     );
     const dataResponse = await response.json();
     setFilter(dataResponse?.data);
+    setTotalPages(dataResponse?.totalPages);
   };
 
   // search
   const handleSearch = (e) => {
     const { value } = e.target;
+    const url = new URL(window.location.href);
     if (value) {
-      navigate(`/search?q=${value}`);
+      url.searchParams.set('q', value);
+      if (!url.searchParams.has('page')) {
+        url.searchParams.set('page', '1');
+      }
+      navigate(url.pathname + url.search);
     } else {
       navigate("/products");
     }
   };
   const fetchProduct = async () => {
     const response = await fetch(
-      SummaryApi.searchProduct.url + "?q=" + keyword
+      `${SummaryApi.searchProduct.url}?q=${keyword}&page=${page}&limit=9`
     );
     const dataResponse = await response.json();
     setFilter(dataResponse?.data);
+    setTotalPages(dataResponse?.totalPages);
   };
 
   // page
@@ -242,7 +254,11 @@ function ProductList() {
                 {Array.from({ length: totalPages }, (_, i) => (
                   <button
                     key={i}
-                    onClick={() => navigate(`/products?page=${i + 1}`)}
+                    onClick={() => {
+                      const url = new URL(window.location.href);
+                      url.searchParams.set('page', i + 1);
+                      navigate(url.pathname + url.search);
+                    }}
                     className={`btn ${
                       i + 1 === page 
                         ? "btn-dark" 

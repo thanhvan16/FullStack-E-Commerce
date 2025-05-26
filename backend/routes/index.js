@@ -34,6 +34,7 @@ const userOrderController = require('../controller/Order/userOrders')
 const allOrderController = require('../controller/Order/allOrder')
 const updateOrderController = require('../controller/Order/updateOrder')
 const clearCartController = require('../controller/User/clearCart')
+const cancelOrderController = require('../controller/Order/cancelOrder')
 
 // User
 router.post("/register",userSignUpController)
@@ -76,5 +77,6 @@ router.post("/verifyOrder", authToken, verifyOrderController)
 router.post("/userOrder", authToken, userOrderController)
 router.get("/allOrder", authTokenAdmin,allOrderController)
 router.post("/updateOrder", authTokenAdmin, updateOrderController)
+router.delete("/cancelOrder", cancelOrderController)
 
 module.exports= router

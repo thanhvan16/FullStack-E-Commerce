@@ -1,4 +1,3 @@
-
 import { use } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -12,6 +11,8 @@ function Order() {
   const [orders, setOrders] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [ordersPerPage] = useState(6)
 
   const handleViewOrderDetails = (order) => {
     setOrderDetails(order);
@@ -96,6 +97,19 @@ function Order() {
     }
   };
 
+  // Tính toán các đơn hàng cho trang hiện tại
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+
+  // Tính tổng số trang
+  const totalPages = Math.ceil(orders.length / ordersPerPage);
+
+  // Hàm chuyển trang
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="order-container">
       <div id="ordersBtn" className={isModalOpen ? "blur" : ""}>
@@ -114,8 +128,8 @@ function Order() {
               </tr>
             </thead>
             <tbody>
-              {orders && orders.length > 0 ? (
-                orders.map((order) => (
+              {currentOrders && currentOrders.length > 0 ? (
+                currentOrders.map((order) => (
                   <tr key={order._id}>
                     <td>
                       {order.address.firstName + " " + order.address.lastName}
@@ -162,6 +176,37 @@ function Order() {
               )}
             </tbody>
           </table>
+          
+          {/* Phân trang */}
+          {orders.length > 0 && (
+            <div className="pagination">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="pagination-btn"
+              >
+                &laquo; Trước
+              </button>
+              
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index + 1}
+                  onClick={() => handlePageChange(index + 1)}
+                  className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="pagination-btn"
+              >
+                Sau &raquo;
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <OrderDetails

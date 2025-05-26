@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useState } from "react";
 import SummaryApi from "../../common";
@@ -118,7 +117,7 @@ function Users() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.map((user, index) => (
+                                    {users.filter(user => user.role === ROLE.USER).map((user, index) => (
                                         <tr key={user?._id}>
                                             <td className="text-center">{index + 1}</td>
                                             <td>

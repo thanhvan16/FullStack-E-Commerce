@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { FaBox, FaCalendarAlt, FaCreditCard, FaShippingFast, FaMoneyBillWave } from "react-icons/fa";
+import { FaBox, FaCalendarAlt, FaCreditCard, FaShippingFast, FaMoneyBillWave, FaTimesCircle } from "react-icons/fa";
 import SummaryApi from "../../common";
-
+import { toast } from 'react-toastify';
 const OrderView = () => {
   const [orderList, setOrderList] = useState([]);
   const user = useSelector((state) => state?.user?.user);
@@ -24,6 +24,25 @@ const OrderView = () => {
     const dataResponse = await dataApi.json();
     setOrderList(dataResponse?.data);
   };
+
+  const handleCancelOrder = async (orderId) => {
+      const response = await fetch(SummaryApi.cancelOrder.url, {
+        method: SummaryApi.cancelOrder.method,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({orderId})
+      });
+      const dataResponse = await response.json()
+      if(dataResponse.success){
+        toast.success(dataResponse.message)
+        userOrder()
+      }
+      else{
+        toast.error(dataResponse.message)
+      }
+    }
 
   useEffect(() => {
     userOrder();
@@ -54,15 +73,30 @@ const OrderView = () => {
             <div className="card-header bg-primary bg-gradient text-white py-3 px-4">
               <div className="d-flex justify-content-between align-items-center">
                 <span><strong>Mã đơn:</strong> #{order._id}</span>
-                <span className="badge bg-light text-primary">
-                  {order.status === "Pending" ? (
-                    <span className="text-warning">⏳ Đang xử lí</span>
-                  ) : order.status === "Shipping" ? (
-                    <span className="text-primary">🚚 Đang giao</span>
-                  ) : (
-                    <span className="text-success">✓ Đã giao</span>
+                <div className="d-flex align-items-center">
+                  <span className="badge bg-light text-primary me-2">
+                    {order.status === "Pending" ? (
+                      <span className="text-warning">⏳ Đang xử lí</span>
+                    ) : order.status === "Shipping" ? (
+                      <span className="text-primary">🚚 Đang giao</span>
+                    ) : (
+                      <span className="text-success">✓ Đã giao</span>
+                    )}
+                  </span>
+                  {order.status === "Pending" && (
+                    <button
+                      className="btn btn-sm btn-danger d-flex align-items-center"
+                      onClick={() => {
+                        if (window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+                          handleCancelOrder(order._id);
+                        }
+                      }}
+                    >
+                      <FaTimesCircle className="me-1" />
+                      Hủy đơn
+                    </button>
                   )}
-                </span>
+                </div>
               </div>
             </div>
 
